@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:qr_scanner/page/generate.dart';
 import 'package:qr_scanner/page/home.dart';
+import 'package:qr_scanner/page/scanner.dart';
 
-void main() => runApp(MaterialApp(
+void main() => runApp(const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MyApp(),
     ));
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -16,6 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return HomePage();
+    return const HomePage();
+    // return const GeneratPage();
   }
 }
