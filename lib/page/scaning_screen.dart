@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
+import 'result_screen.dart';
 
 class ScaningScreen extends StatefulWidget {
   const ScaningScreen({Key? key}) : super(key: key);
@@ -15,14 +17,10 @@ class _ScaningScreenState extends State<ScaningScreen> {
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
   QRViewController? controller;
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
 
   @override
   void reassemble() async {
+    print("Checking Platform");
     super.reassemble();
     if (Platform.isAndroid) {
       await controller!.pauseCamera();
@@ -31,22 +29,28 @@ class _ScaningScreenState extends State<ScaningScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    print("init");
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    controller!.stopCamera();
+    print("Disposeed:::::::::::>>>>>>>>>>>>>>>>");
+    controller!.resumeCamera();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => SafeArea(
         child: Scaffold(
           body: Stack(
             alignment: Alignment.center,
-            children: <Widget>[
-              buildQrView(context),
-              Positioned(bottom: 10, child: buildResult())
-            ],
+            children: <Widget>[buildQrView(context)],
           ),
         ),
-      );
-
-  Widget buildResult() => Text(
-        barcode != null ? 'Result : ${barcode!.code}' : 'Scan a code!',
-        maxLines: 3,
-        style: TextStyle(color: Colors.white),
       );
 
   Widget buildQrView(BuildContext context) => QRView(
@@ -61,7 +65,28 @@ class _ScaningScreenState extends State<ScaningScreen> {
       );
   void onQRViewCreated(QRViewController controller) {
     setState(() => this.controller = controller);
-    controller.scannedDataStream
-        .listen((barcode) => setState(() => this.barcode = barcode));
+    controller.scannedDataStream.listen((barcode) => setState(() async {
+          await controller.pauseCamera();
+          Get.to(
+              ResutlScreen(
+                data: barcode.code.toString(),
+              ),
+              transition: Transition.zoom);
+          // await Navigator.pushAndRemoveUntil(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (_) => ResutlScreen(
+          //               data: barcode.code.toString(),
+          //             )),
+          //     (route) => false);
+
+          // await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //       builder: (context) => ResutlScreen(
+          //             data: barcode.code.toString(),
+          //           )),
+          // );
+        }));
   }
 }

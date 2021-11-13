@@ -57,7 +57,6 @@ class _GeneratPageState extends State<GeneratPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(onPressed: () {}, child: Text("Scan")),
                       ElevatedButton(
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
